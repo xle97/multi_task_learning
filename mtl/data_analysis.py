@@ -195,12 +195,63 @@ def step4(target_path):
             fw.write(line+"\n")
     print("step4 done")
 
+def step5(target_path):
+    """
+    挑选图片制作校准数据集
+    """
+    data_path_nsfw = os.path.join(target_path, "nsfw")
+    data_path_politics = os.path.join(target_path, "politics")
+    data_path_terrorism = os.path.join(target_path, "terrorism")
+    
+    calibL = []
+    nsfw_list = os.listdir(data_path_nsfw)
+    for fd in nsfw_list:
+        file_list = glob.glob(os.path.join(data_path_nsfw, fd)+"/*")
+        range_num = 100 if fd == "neutral" else 50
+        for i in range(range_num):
+            calibL.append(file_list[i])
+    politics_list = os.listdir(data_path_politics)
+    for fd in politics_list:
+        file_list = glob.glob(os.path.join(data_path_politics, fd)+"/*")
+        for i in range(50):
+            calibL.append(file_list[i])
+    terrorism_list = os.listdir(data_path_terrorism)
+    for fd in terrorism_list:
+        file_list = glob.glob(os.path.join(data_path_terrorism, fd)+"/*")
+        for i in range(50):
+            calibL.append(file_list[i])
+    with open('calib.txt','w') as fw:
+        for line in calibL:
+            fw.write(line+"\n")
+    print("step5 done")
+
+def step6(tpath):
+    """
+    制作校准数据集
+    """
+    import shutil
+
+    target_path = "calib"
+    if not os.path.exists(target_path):
+        os.makedirs(target_path)
+
+    with open('calib.txt', 'r') as fr:
+        for i, line in enumerate(fr):
+            name = line.strip()
+            suffix = os.path.splitext(name)[-1]
+            try:
+                shutil.copy(name, os.path.join(target_path, f"img_{str(i)}.{suffix}"))
+            except:
+                print(name)
+                exit(0)
+    print("step6 done")
+
 def call_fun_by_str(fun_str, args):
 
     eval(fun_str)(args)
 
 if __name__ == "__main__":
-    args = 4
+    args = 5
     target_path = "/data2/rzhang/mtl_data"
     call_fun_by_str(f"step{str(args)}", args=target_path)
     

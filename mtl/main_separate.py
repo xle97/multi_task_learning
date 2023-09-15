@@ -130,6 +130,9 @@ def main(args):
         for name, param in model.named_parameters():
             if train_head not in name:
                 param.requires_grad = False
+        # for name, param in model.named_parameters():
+        #     print(name, ":",param.requires_grad)
+        # exit(0)
         optimizer = torch.optim.SGD(filter(lambda p : p.requires_grad, model.parameters()), 
                                     args.lr,
                                     momentum=args.momentum,
